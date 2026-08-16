@@ -1,6 +1,6 @@
-# Fletcher
+# Blog
 
-Source for [fletcher-arklink.github.io/blog](https://fletcher-arklink.github.io/blog/), a collection of notes on security, engineering, design, and research.
+Source for [fletcherdavis.com](https://fletcherdavis.com), a collection of notes on security, engineering, design, and research.
 
 Built with Astro, MDX, React, and TypeScript. Articles are rendered as static HTML, with React used only for interactive components.
 
