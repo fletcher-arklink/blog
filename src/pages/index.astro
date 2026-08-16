@@ -1,0 +1,135 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { byNewest } from '../lib/posts';
+import { PROFILE, SITE } from '../lib/site';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byNewest);
+---
+
+<BaseLayout>
+  <div class="home-page">
+    <article class="intro">
+      <header>
+        <h1>{SITE.name}</h1>
+        <p>{PROFILE.tagline}</p>
+      </header>
+      <p>
+        Currently building <a href={PROFILE.links.arklink} target="_blank" rel="noopener noreferrer"
+          >ArkLink</a
+        >.
+      </p>
+      <p>
+        Previously, I led research at <a
+          href={PROFILE.links.beyondTrust}
+          target="_blank"
+          rel="noopener noreferrer">BeyondTrust</a
+        > and built <a
+          href={PROFILE.links.btPhantomLabs}
+          target="_blank"
+          rel="noopener noreferrer">Phantom Labs</a
+        >. Before that, I operated on red teams at <a
+          href={PROFILE.links.crowdStrike}
+          target="_blank"
+          rel="noopener noreferrer">CrowdStrike</a
+        > and <a href={PROFILE.links.mandiant} target="_blank" rel="noopener noreferrer">Mandiant</a>.
+      </p>
+      <p>
+      These notes are from my journey rethinking security across engineering, design, research, and everything in between.
+      </p>
+      <p class="contact">
+        Find me on <a href={PROFILE.links.x} target="_blank" rel="me noopener noreferrer">X</a>,
+        <a href={PROFILE.links.linkedin} target="_blank" rel="noopener noreferrer"> LinkedIn</a>,
+        and <a href={PROFILE.links.github} target="_blank" rel="me noopener noreferrer">GitHub</a>,
+        or say hello over <a href={`mailto:${SITE.email}`}>email</a>.
+      </p>
+    </article>
+
+    <section class="writing" aria-labelledby="writing-heading">
+      <h2 id="writing-heading">Writing</h2>
+      <PostList posts={posts} compact />
+    </section>
+
+    <footer>
+      <p>© {new Date().getFullYear()} {SITE.name}</p>
+    </footer>
+  </div>
+</BaseLayout>
+
+<style>
+  .home-page {
+    width: min(100%, 36.375rem);
+    margin-inline: auto;
+    padding: 4.85rem 1rem 2.5rem;
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    font-weight: 460;
+    line-height: 1.25rem;
+    letter-spacing: -0.0056rem;
+  }
+  .intro header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-bottom: 0.75rem;
+  }
+  .intro h1 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    letter-spacing: -0.0056rem;
+  }
+  .intro header p {
+    color: var(--secondary);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.125rem;
+  }
+  footer { color: var(--muted); }
+  .intro p { margin: 0; }
+  .intro > p + p { margin-top: 1rem; }
+  .intro a {
+    color: inherit;
+    text-decoration-color: var(--faint);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.14em;
+    transition: text-decoration-color 120ms ease;
+  }
+  .intro a:hover { color: inherit; text-decoration-color: var(--secondary); }
+  .writing { margin-top: 3rem; }
+  .writing > h2 {
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--faint);
+    color: var(--secondary);
+    font-size: 0.875rem;
+    font-weight: 460;
+    line-height: 1.25rem;
+    letter-spacing: -0.0056rem;
+  }
+  footer {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 3rem;
+    padding-top: 2.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+  footer::before {
+    content: '';
+    display: block;
+    flex-basis: 100%;
+    width: 3.125rem;
+    height: 1px;
+    margin-bottom: 2rem;
+    background: var(--faint);
+  }
+  footer p { margin: 0; }
+  @media (max-width: 600px) {
+    .home-page { padding: 2rem 1.5rem 2.5rem; }
+  }
+</style>

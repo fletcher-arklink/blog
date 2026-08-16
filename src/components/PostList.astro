@@ -1,0 +1,80 @@
+---
+import type { BlogPost } from '../lib/posts';
+import { formatDate, withBase } from '../lib/site';
+
+interface Props {
+  posts: BlogPost[];
+  compact?: boolean;
+}
+const { posts, compact = false } = Astro.props;
+
+const shortDate = (date: Date) => new Intl.DateTimeFormat('en-GB', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+}).format(date);
+---
+
+<ol class:list={['post-list', { compact }]}>
+  {posts.map((post) => (
+    <li>
+      <a href={withBase(`blog/${post.id}/`)}>
+        <span class="post-title">{post.data.title}</span>
+        <span class="post-description">{post.data.description}</span>
+        <time datetime={post.data.date.toISOString()}>
+          {compact ? shortDate(post.data.date) : formatDate(post.data.date)}
+        </time>
+      </a>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .post-list { margin: 0; padding: 0; list-style: none; }
+  li { border-top: 1px solid var(--faint); }
+  li:last-child { border-bottom: 1px solid var(--faint); }
+  a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem 2rem;
+    padding-block: 1.25rem;
+    text-decoration: none;
+  }
+  .post-title { font: 650 1rem/1.35 var(--sans); letter-spacing: -0.015em; }
+  .post-description { grid-column: 1; color: var(--secondary); font-size: 0.88rem; line-height: 1.45; }
+  time { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--secondary); font: 0.68rem/1.4 var(--sans); white-space: nowrap; }
+  .compact li { border-top: 0; border-bottom: 1px solid var(--faint); }
+  .compact li:last-child { border-bottom: 0; }
+  .compact a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.735rem;
+  }
+  .compact .post-title {
+    min-width: 0;
+    font-size: 0.875rem;
+    font-weight: 460;
+    line-height: 1.25rem;
+    letter-spacing: -0.0056rem;
+  }
+  .compact .post-description { display: none; }
+  .compact time {
+    display: block;
+    flex: 0 0 auto;
+    color: var(--secondary);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.25rem;
+    letter-spacing: -0.0025rem;
+  }
+  .compact a:hover .post-title { color: var(--ink); }
+  @media (max-width: 600px) {
+    a { display: block; }
+    .post-description { display: block; margin-top: 0.35rem; }
+    time { display: block; margin-top: 0.6rem; }
+    .compact a { display: flex; }
+    .compact time { margin-top: 0; }
+  }
+</style>

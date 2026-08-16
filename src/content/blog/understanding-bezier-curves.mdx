@@ -1,0 +1,51 @@
+---
+title: "Understanding Bézier Curves"
+description: "An interactive exploration of the small idea behind smooth, controllable curves."
+date: 2026-08-16
+tags:
+  - geometry
+  - interaction
+---
+
+import BezierPlayground from '../../components/interactive/BezierPlayground';
+
+Most drawing tools hide their most useful geometry behind a pair of handles. Pull one, and a line bends toward it. Pull the other, and the curve changes its mind. The mechanism is a Bézier curve—and the important part is simpler than its formula suggests.
+
+> A Bézier curve does not pass through its control points. It is pulled toward them.
+
+## Four points, one path
+
+A cubic Bézier curve has two endpoints and two control points. The endpoints say where the curve begins and ends. The controls determine its direction and momentum along the way.
+
+<BezierPlayground client:load />
+
+Drag either outlined point. The dashed lines show the starting and ending tangents; the small marker travels along the resulting curve. The browser ships JavaScript for this experiment, but the rest of the article remains static HTML.
+
+## The interpolation underneath
+
+At a position `t` between zero and one, the curve blends all four points with changing weights:
+
+```ts
+function cubic(t, p0, p1, p2, p3) {
+  const u = 1 - t;
+  return u ** 3 * p0
+    + 3 * u ** 2 * t * p1
+    + 3 * u * t ** 2 * p2
+    + t ** 3 * p3;
+}
+```
+
+The weights always add to one. That gives the curve a useful containment property: it stays inside the convex hull of its four defining points.
+
+| Value of `t` | Strongest influence |
+| --- | --- |
+| `0` | Starting point |
+| About `0.33` | First control point |
+| About `0.67` | Second control point |
+| `1` | Ending point |
+
+## Why the handles feel natural
+
+The first control point determines the tangent leaving the start. The second determines the tangent entering the end. This local-feeling control is why the same construction works for type outlines, vector illustration, motion easing, and road geometry.
+
+The formula matters when you implement the curve. The handles matter when you design with one.

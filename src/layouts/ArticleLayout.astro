@@ -1,0 +1,218 @@
+---
+import type { BlogPost } from '../lib/posts';
+import { formatDate, withBase } from '../lib/site';
+import { readingTime } from '../lib/posts';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  post: BlogPost;
+  previous?: BlogPost;
+  next?: BlogPost;
+  headings?: Array<{ depth: number; slug: string; text: string }>;
+}
+
+const { post, previous, next, headings = [] } = Astro.props;
+const published = formatDate(post.data.date);
+const updated = post.data.updated ? formatDate(post.data.updated) : undefined;
+const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
+---
+
+<BaseLayout
+  title={`${post.data.title} — Fletcher`}
+  description={post.data.description}
+  type="article"
+>
+  <div class="article-frame">
+    <aside class="article-aside">
+      <a class="index-link" href={withBase()}><span aria-hidden="true">←</span> Index</a>
+      {sections.length > 0 && (
+        <nav class="section-nav" aria-label="Article sections">
+          <p>Sections</p>
+          <ol>
+            {sections.map((heading) => (
+              <li class:list={{ nested: heading.depth === 3 }}>
+                <a href={`#${heading.slug}`}>{heading.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+    </aside>
+
+    <article class="article-page">
+      <header class="article-header">
+        <h1>{post.data.title}</h1>
+      <div class="article-meta">
+        <time datetime={post.data.date.toISOString()}>{published}</time>
+        <span aria-hidden="true">·</span>
+        <span>{readingTime(post.body)}</span>
+      </div>
+      <p class="description">{post.data.description}</p>
+      </header>
+
+      <div class="prose article-prose">
+        <slot />
+      </div>
+
+      <footer class="article-footer">
+        {updated && (
+          <p class="updated">Last updated <time datetime={post.data.updated?.toISOString()}>{updated}</time>.</p>
+        )}
+        {post.data.tags.length > 0 && (
+          <p class="tags" aria-label="Tags">{post.data.tags.join(' · ')}</p>
+        )}
+      </footer>
+
+      <nav class="post-nav" aria-label="Adjacent posts">
+        {previous && (
+          <a href={withBase(`blog/${previous.id}/`)}>
+            <span>Previous</span>
+            <strong>{previous.data.title}</strong>
+          </a>
+        )}
+        {next && (
+          <a href={withBase(`blog/${next.id}/`)}>
+            <span>Next</span>
+            <strong>{next.data.title}</strong>
+          </a>
+        )}
+      </nav>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .article-frame {
+    --accent: var(--tertiary);
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 36.375rem);
+    gap: 3rem;
+    width: min(100%, 51.375rem);
+    margin-inline: auto;
+    padding: 4.85rem 1rem 4rem;
+    font-family: var(--sans);
+  }
+  .article-aside {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+  }
+  .index-link {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--secondary);
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    text-decoration: none;
+  }
+  .index-link:hover { color: var(--ink); }
+  .section-nav { margin-top: 2.75rem; }
+  .section-nav p {
+    margin: 0 0 0.5rem;
+    color: var(--muted);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 0.875rem;
+  }
+  .section-nav ol { margin: 0; padding: 0; list-style: none; }
+  .section-nav li + li { margin-top: 0.4rem; }
+  .section-nav li.nested { padding-left: 0.65rem; }
+  .section-nav a {
+    display: block;
+    color: var(--secondary);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1rem;
+    text-decoration: none;
+    text-wrap: pretty;
+  }
+  .section-nav a:hover { color: var(--accent); }
+  .article-page { min-width: 0; }
+  .article-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-bottom: 1rem;
+  }
+  h1 {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    letter-spacing: -0.0056rem;
+    text-wrap: balance;
+  }
+  .article-meta {
+    display: flex;
+    gap: 0.4rem;
+    color: var(--secondary);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.25rem;
+    letter-spacing: -0.0025rem;
+  }
+  .description {
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 460;
+    line-height: 1.25rem;
+    letter-spacing: -0.0056rem;
+    text-wrap: pretty;
+  }
+  .article-footer {
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+  .article-footer::before {
+    content: '';
+    display: block;
+    width: 3.125rem;
+    height: 1px;
+    margin-bottom: 2rem;
+    background: var(--faint);
+  }
+  .article-footer p { margin: 0; }
+  .article-footer p + p { margin-top: 0.4rem; }
+  .post-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--faint);
+  }
+  .post-nav a { display: block; text-decoration: none; }
+  .post-nav span {
+    display: block;
+    margin-bottom: 0.15rem;
+    color: var(--secondary);
+    font-size: 0.6875rem;
+    line-height: 1rem;
+  }
+  .post-nav strong {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  @media (max-width: 760px) {
+    .article-frame {
+      display: block;
+      width: min(100%, 36.375rem);
+      padding: 2rem 1.5rem 3rem;
+    }
+    .article-aside { position: static; margin-bottom: 2.25rem; }
+    .section-nav {
+      margin: 1.5rem 0 0;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--faint);
+    }
+    .section-nav ol { display: flex; flex-wrap: wrap; gap: 0.35rem 0.8rem; }
+    .section-nav li + li { margin-top: 0; }
+    .section-nav li.nested { padding-left: 0; }
+    .section-nav a { text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 0.14em; }
+    .post-nav { grid-template-columns: 1fr; }
+  }
+</style>

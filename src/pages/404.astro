@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/site';
+---
+
+<BaseLayout title="Page not found — Fletcher" description="This page does not exist.">
+  <main class="not-found">
+    <p class="code">404</p>
+    <h1>Page not found.</h1>
+    <p>The page you were looking for has moved, or perhaps it was never written.</p>
+    <a href={withBase()}>Return to the index</a>
+  </main>
+</BaseLayout>
+
+<style>
+  .not-found {
+    width: min(100%, 36.375rem);
+    margin-inline: auto;
+    padding: 4.85rem 1rem 4rem;
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    font-weight: 460;
+    line-height: 1.25rem;
+    letter-spacing: -0.0056rem;
+  }
+  .code { margin: 0 0 2.75rem; color: var(--muted); font-size: 0.8125rem; font-weight: 400; }
+  h1 { margin: 0; font: 500 1.125rem/1.25rem var(--sans); letter-spacing: -0.0056rem; }
+  .not-found > p:not(.code) { margin: 0.25rem 0 0; color: var(--secondary); }
+  a {
+    display: inline-block;
+    margin-top: 1rem;
+    color: inherit;
+    text-decoration-color: var(--faint);
+    text-underline-offset: 0.14em;
+  }
+  a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+  @media (max-width: 600px) {
+    .not-found { padding: 2rem 1.5rem 3rem; }
+  }
+</style>
