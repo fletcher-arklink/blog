@@ -75,18 +75,18 @@ keyboard path for every pointer interaction. Keep generic article styling in
 The workflow calculates Astro's `site` and `base` at build time:
 
 - **User site** (`username.github.io` repository): no variables are needed. The base path is `/`.
-- **Project site** (for example a `my-blog` repository): no variables are needed. The base path is
-  automatically `/my-blog` and the public URL is `https://username.github.io/my-blog/`.
+- **This project site** (`fletcher-arklink/blog`): no variables are needed. The base path is
+  automatically `/blog` and the public URL is `https://fletcher-arklink.github.io/blog/`.
 - **Custom domain**: add a repository Actions variable named `SITE_URL` containing the full origin,
   such as `https://example.com`, and a variable named `BASE_PATH` containing `/`. Add the domain in
-  GitHub Pages settings. If GitHub asks for it, create `public/CNAME` containing only the domain.
+  GitHub Pages settings. A `CNAME` file is not required for an Actions-based deployment.
 
 For an unusual custom setup hosted below a path, set both variables to the exact origin and path.
 Local builds default to `https://username.github.io` and `/`; you can test another configuration
 with environment variables:
 
 ```bash
-SITE_URL=https://username.github.io BASE_PATH=/my-blog pnpm build
+SITE_URL=https://fletcher-arklink.github.io BASE_PATH=/blog pnpm build
 ```
 
 ## Project map

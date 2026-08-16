@@ -11,7 +11,7 @@ export const PROFILE = {
   links: {
     x: 'https://x.com/gymR4T',
     linkedin: 'https://www.linkedin.com/in/fletcher-davis',
-    github: 'https://github.com/gymR4T',
+    github: 'https://github.com/fletcher-arklink',
     arklink: 'https://arklink.io',
     beyondTrust: 'https://www.beyondtrust.com/',
     btPhantomLabs: 'https://www.linkedin.com/company/beyondtrust-phantom-labs',
