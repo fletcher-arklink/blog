@@ -40,8 +40,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byNe
       </p>
       <p class="contact">
         Find me on <a href={PROFILE.links.x} target="_blank" rel="me noopener noreferrer">X</a>,
-        <a href={PROFILE.links.linkedin} target="_blank" rel="noopener noreferrer"> LinkedIn</a>,
-        and <a href={PROFILE.links.github} target="_blank" rel="me noopener noreferrer">GitHub</a>,
+        and <a href={PROFILE.links.linkedin} target="_blank" rel="noopener noreferrer"> LinkedIn</a>,
         or say hello over <a href={`mailto:${SITE.email}`}>email</a>.
       </p>
     </article>
