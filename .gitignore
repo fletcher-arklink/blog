@@ -1,5 +1,7 @@
 # Dependencies and generated output
 node_modules/
+.pnpm-store/
+.pnpm-cache/
 dist/
 .astro/
 coverage/

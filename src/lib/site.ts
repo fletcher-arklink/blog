@@ -1,6 +1,6 @@
 export const SITE = {
   name: 'Fletcher Davis',
-  title: 'Making complex systems a little less complex',
+  title: "Fletcher's Blog",
   description:
     'Field notes from the intersection of security, engineering, design, and research.',
   email: 'fletcher@arklink.io',

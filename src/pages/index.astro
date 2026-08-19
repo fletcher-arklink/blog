@@ -13,12 +13,10 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byNe
     <article class="intro">
       <header>
         <h1>{SITE.name}</h1>
-        <p>{PROFILE.tagline}</p>
+        <p>Co-Founder & CEO @ <span class="hidden-product">ArkLink</span></p>
       </header>
       <p>
-        Currently building <a href={PROFILE.links.arklink} target="_blank" rel="noopener noreferrer"
-          >ArkLink</a
-        >.
+        Currently building <span class="hidden-product">ArkLink</span>.
       </p>
       <p>
         Previously, I led research at <a
@@ -39,7 +37,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byNe
       These notes are from my journey rethinking security across engineering, design, research, and everything in between.
       </p>
       <p class="contact">
-        Find me rambling on <a href={PROFILE.links.x} target="_blank" rel="me noopener noreferrer">X</a>,
+        Find me rambling on <a href={PROFILE.links.x} target="_blank" rel="me noopener noreferrer">X</a> and 
         <a href={PROFILE.links.linkedin} target="_blank" rel="noopener noreferrer"> LinkedIn</a>,
         or reach out over <a href={`mailto:${SITE.email}`}>email</a>.
       </p>
@@ -89,6 +87,11 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byNe
   footer { color: var(--muted); }
   .intro p { margin: 0; }
   .intro > p + p { margin-top: 1rem; }
+  .hidden-product {
+    display: inline-block;
+    filter: blur(0.3rem);
+    user-select: none;
+  }
   .intro a {
     color: inherit;
     text-decoration-color: var(--faint);

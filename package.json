@@ -1,9 +1,9 @@
 {
-  "name": "fletcher-notes",
+  "name": "fletcher-blog",
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@11.15.1",
+  "packageManager": "pnpm@11.22.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
