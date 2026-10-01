@@ -25,10 +25,28 @@ export function withBase(path = '') {
   return `${base}/${cleanPath}` || '/';
 }
 
+const longDateFormatter = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+
+const shortDateFormatter = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+
 export function formatDate(date: Date) {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date);
+  return longDateFormatter.format(date);
+}
+
+export function formatShortDate(date: Date) {
+  return shortDateFormatter.format(date);
+}
+
+export function dateTimeValue(date: Date) {
+  return date.toISOString().slice(0, 10);
 }

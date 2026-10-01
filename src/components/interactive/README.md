@@ -14,5 +14,6 @@ import MyExperiment from '../../components/interactive/MyExperiment';
 
 `client:visible` hydrates the island shortly before it enters the viewport. Use `client:load` when
 the interaction is a primary article figure that should be ready immediately, or `client:idle` for
-non-urgent components that should initialize after the page settles. The included Bézier example
-uses `client:load` so its controls are available as soon as the article renders.
+non-urgent components that should initialize after the page settles. The included Bézier example, machine-modality query console, and graphical-modality
+product console use `client:load` so their controls are available as soon as the article
+renders.

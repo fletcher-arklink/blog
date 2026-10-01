@@ -136,7 +136,7 @@ img { display: block; max-width: 100%; height: auto; }
   letter-spacing: -0.0056rem;
   text-wrap: balance;
 }
-.article-prose h2 { margin-top: 2.25rem; }
+.article-prose h2 { margin-top: 1.5rem; }
 .article-prose h3,
 .article-prose h4 { margin-top: 1.5rem; }
 .article-prose p { margin-bottom: 0; }

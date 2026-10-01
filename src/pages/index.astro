@@ -13,10 +13,10 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byNe
     <article class="intro">
       <header>
         <h1>{SITE.name}</h1>
-        <p>Co-Founder & CEO @ <span class="hidden-product">ArkLink</span></p>
+        <p>Co-Founder & CEO @ ArkLink</p>
       </header>
       <p>
-        Currently building <span class="hidden-product">ArkLink</span>.
+        Currently building ArkLink.
       </p>
       <p>
         Previously, I led research at <a
@@ -87,11 +87,6 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byNe
   footer { color: var(--muted); }
   .intro p { margin: 0; }
   .intro > p + p { margin-top: 1rem; }
-  .hidden-product {
-    display: inline-block;
-    filter: blur(0.3rem);
-    user-select: none;
-  }
   .intro a {
     color: inherit;
     text-decoration-color: var(--faint);

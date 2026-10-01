@@ -1,6 +1,6 @@
 ---
 import type { BlogPost } from '../lib/posts';
-import { formatDate, withBase } from '../lib/site';
+import { dateTimeValue, formatDate, withBase } from '../lib/site';
 import { readingTime } from '../lib/posts';
 import BaseLayout from './BaseLayout.astro';
 
@@ -42,12 +42,12 @@ const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
     <article class="article-page">
       <header class="article-header">
         <h1>{post.data.title}</h1>
-      <div class="article-meta">
-        <time datetime={post.data.date.toISOString()}>{published}</time>
-        <span aria-hidden="true">·</span>
-        <span>{readingTime(post.body)}</span>
-      </div>
-      <p class="description">{post.data.description}</p>
+        <p class="description">{post.data.description}</p>
+        <div class="article-meta">
+          <time datetime={dateTimeValue(post.data.date)}>{published}</time>
+          <span aria-hidden="true">·</span>
+          <span>{readingTime(post.body)}</span>
+        </div>
       </header>
 
       <div class="prose article-prose">
@@ -56,7 +56,7 @@ const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
 
       <footer class="article-footer">
         {updated && (
-          <p class="updated">Last updated <time datetime={post.data.updated?.toISOString()}>{updated}</time>.</p>
+          <p class="updated">Last updated <time datetime={dateTimeValue(post.data.updated!)}>{updated}</time>.</p>
         )}
         {post.data.tags.length > 0 && (
           <p class="tags" aria-label="Tags">{post.data.tags.join(' · ')}</p>
@@ -85,9 +85,9 @@ const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
   .article-frame {
     --accent: var(--tertiary);
     display: grid;
-    grid-template-columns: 9rem minmax(0, 36.375rem);
-    gap: 3rem;
-    width: min(100%, 51.375rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 36.375rem) minmax(0, 1fr);
+    column-gap: clamp(1rem, 3vw, 3rem);
+    width: 100%;
     margin-inline: auto;
     padding: 4.85rem 1rem 4rem;
     font-family: var(--sans);
@@ -96,6 +96,8 @@ const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
     position: sticky;
     top: 2rem;
     align-self: start;
+    justify-self: end;
+    width: 9rem;
   }
   .index-link {
     display: flex;
@@ -133,17 +135,18 @@ const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    padding-bottom: 1rem;
+    padding-bottom: 0.5rem;
   }
   h1 {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 500;
-    line-height: 1.25rem;
+    line-height: 1.5rem;
     letter-spacing: -0.0056rem;
     text-wrap: balance;
   }
   .article-meta {
+    margin-top: 0.5rem;
     display: flex;
     gap: 0.4rem;
     color: var(--secondary);
@@ -153,10 +156,11 @@ const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
     letter-spacing: -0.0025rem;
   }
   .description {
-    margin: 0.75rem 0 0;
+    margin: 0;
+    color: var(--secondary);
     font-size: 0.875rem;
-    font-weight: 460;
-    line-height: 1.25rem;
+    font-weight: 400;
+    line-height: 1.375rem;
     letter-spacing: -0.0056rem;
     text-wrap: pretty;
   }
@@ -203,7 +207,7 @@ const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
       width: min(100%, 36.375rem);
       padding: 2rem 1.5rem 3rem;
     }
-    .article-aside { position: static; margin-bottom: 2.25rem; }
+    .article-aside { position: static; width: auto; margin-bottom: 2.25rem; }
     .section-nav {
       margin: 1.5rem 0 0;
       padding-bottom: 1rem;
