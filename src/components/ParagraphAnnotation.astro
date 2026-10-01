@@ -11,7 +11,7 @@ const rest = sentenceEnd < 0 ? '' : paragraph.slice(sentenceEnd + 1);
 ---
 
 <details class="paragraph-annotation" data-paragraph-annotation data-side={side}>
-  <summary title="Click to add a handwritten annotation">
+  <summary title="Show annotation">
     <span class="annotation-paragraph"><span class="annotation-lead">{lead}</span>{rest}</span>
   </summary>
   <svg class="paragraph-bracket" viewBox="0 0 600 100" fill="none" aria-hidden="true" focusable="false">
@@ -22,6 +22,7 @@ const rest = sentenceEnd < 0 ? '' : paragraph.slice(sentenceEnd + 1);
 
 <script>
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const mobile = window.matchMedia('(max-width: 760px)');
   document.querySelectorAll<HTMLDetailsElement>('[data-paragraph-annotation]').forEach((annotation) => {
     const paragraph = annotation.querySelector<HTMLElement>('summary')!;
     const note = annotation.querySelector<HTMLElement>('[data-paragraph-note]')!;
@@ -38,7 +39,7 @@ const rest = sentenceEnd < 0 ? '' : paragraph.slice(sentenceEnd + 1);
     };
 
     const positionDrawing = () => {
-      paragraph.title = annotation.open ? 'Click to erase the handwritten annotation' : 'Click to add a handwritten annotation';
+      paragraph.title = annotation.open ? 'Hide annotation' : 'Show annotation';
       if (!annotation.open) return;
       const box = annotation.getBoundingClientRect();
       const body = paragraph.getBoundingClientRect();
@@ -56,7 +57,7 @@ const rest = sentenceEnd < 0 ? '' : paragraph.slice(sentenceEnd + 1);
       if (!annotation.open || event.defaultPrevented) return;
       event.preventDefault();
       if (annotation.classList.contains('is-erasing')) return;
-      if (reducedMotion.matches) {
+      if (reducedMotion.matches || mobile.matches) {
         finishErasing();
         return;
       }
@@ -92,21 +93,21 @@ const rest = sentenceEnd < 0 ? '' : paragraph.slice(sentenceEnd + 1);
   .paragraph-bracket { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; color: #777772; }
   .paragraph-bracket path { stroke: currentColor; stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
   .paragraph-note { margin: 0.875rem 1rem 0; color: #4a4a4a; font: 400 1.35rem/1.2 Caveat, 'Bradley Hand', 'Segoe Print', cursive; }
-  .paragraph-note span { display: inline-block; text-wrap: pretty; }
-  @media (min-width: 1100px) {
-    .paragraph-note { position: absolute; top: 50%; left: calc(100% + 1.75rem); width: 12rem; margin: 0; transform: translateY(-50%) rotate(-2deg); }
-  }
-  @media (min-width: 1100px) and (max-width: 1399px) {
-    details[data-side="left"] .paragraph-note { position: static; width: auto; margin: 0.875rem 1rem 0; transform: none; }
-  }
-  @media (min-width: 1400px) {
-    details[data-side="left"] .paragraph-note { left: auto; right: calc(100% + 1.75rem); transform: translateY(-50%) rotate(2deg); }
-  }
+  .paragraph-note span { display: inline-block; text-wrap: pretty; overflow-wrap: anywhere; }
   @media (prefers-reduced-motion: no-preference) {
     details[open] .bracket-stroke { stroke-dasharray: 1; stroke-dashoffset: 1; animation: bracket-draw 450ms ease-out forwards; }
     details[open] .paragraph-note span { clip-path: inset(-0.1em 100% -0.1em 0); animation: bracket-write 1100ms 300ms linear forwards; }
     details.is-erasing .paragraph-note span { animation: bracket-erase-note 480ms ease-in-out forwards; }
     details.is-erasing .paragraph-bracket { animation: bracket-erase-line 420ms 120ms ease-in-out both; }
+  }
+  @media (max-width: 760px) {
+    .paragraph-note {
+      font-size: 1.25rem;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+    details[open] .paragraph-note span,
+    details.is-erasing .paragraph-note span { animation: none; clip-path: none; }
   }
   @keyframes bracket-erase-note { from { clip-path: var(--erase-from, inset(-0.1em 0 -0.1em 0)); } to { clip-path: inset(-0.1em 0 -0.1em 100%); } }
   @keyframes bracket-erase-line { from { clip-path: inset(0 -2rem 0 -2rem); } to { clip-path: inset(100% -2rem 0 -2rem); } }

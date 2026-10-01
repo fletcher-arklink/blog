@@ -37,17 +37,25 @@ const afterAnchor = text.slice(anchorIndex + anchor.length);
 
     const positionArrow = () => {
       const box = annotation.getBoundingClientRect();
-      const from = origin.getBoundingClientRect();
+      // A wrapped anchor has one rect per line; start at its final fragment.
+      const fragments = origin.getClientRects();
+      const from = fragments[fragments.length - 1] ?? origin.getBoundingClientRect();
+      const sx = from.left - box.left + from.width / 2;
+      const sy = from.bottom - box.top + 4;
+
+      // Keep the note under its anchor while keeping the entire note in the column.
+      const noteWidth = target.offsetWidth;
+      const offset = Math.max(0, Math.min(sx - noteWidth / 2, box.width - noteWidth));
+      target.style.setProperty('--note-offset', `${offset}px`);
       const to = target.getBoundingClientRect();
-      const desktop = window.matchMedia('(min-width: 1100px)').matches;
-      const sx = from.right - box.left + (desktop ? 4 : -3);
-      const sy = desktop ? from.top - box.top + from.height * 0.7 : from.bottom - box.top + 3;
-      const tx = to.left - box.left - 6;
-      const ty = to.top - box.top + to.height * 0.55;
-      const cx = desktop ? (sx + tx) / 2 : tx - 12;
-      const cy = desktop ? (sy + ty) / 2 - 6 : sy + (ty - sy) * 0.65;
-      shaft.setAttribute('d', `M${sx} ${sy} Q${cx} ${cy} ${tx} ${ty}`);
-      const angle = Math.atan2(ty - cy, tx - cx);
+      const tx = Math.max(to.left - box.left + 6, Math.min(sx, to.right - box.left - 6));
+      const ty = to.top - box.top - 7;
+      const gap = Math.max(1, ty - sy);
+      const bend = Math.min(8, gap * 0.2);
+      const cx = Math.max(2, Math.min(box.width - 2, sx + bend));
+      const cy = ty - gap * 0.4;
+      shaft.setAttribute('d', `M${sx} ${sy} C${cx} ${sy + gap * 0.4} ${tx + bend} ${cy} ${tx} ${ty}`);
+      const angle = Math.atan2(ty - cy, -bend);
       const wing = (offset: number) => `${tx - 6 * Math.cos(angle + offset)} ${ty - 6 * Math.sin(angle + offset)}`;
       head.setAttribute('d', `M${wing(0.45)} L${tx} ${ty} L${wing(-0.5)}`);
       arrow.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
@@ -58,6 +66,8 @@ const afterAnchor = text.slice(anchorIndex + anchor.length);
     const resizeObserver = new ResizeObserver(positionArrow);
     resizeObserver.observe(annotation);
     resizeObserver.observe(target);
+    resizeObserver.observe(origin.closest('p')!);
+    window.addEventListener('resize', positionArrow);
     document.fonts.ready.then(positionArrow);
 
     if (!reducedMotion.matches && 'IntersectionObserver' in window) {

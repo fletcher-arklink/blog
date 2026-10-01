@@ -130,7 +130,7 @@ const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
     text-wrap: pretty;
   }
   .section-nav a:hover { color: var(--accent); }
-  .article-page { min-width: 0; }
+  .article-page { grid-column: 2; min-width: 0; }
   .article-header {
     display: flex;
     flex-direction: column;
@@ -201,22 +201,16 @@ const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
     font-weight: 500;
     line-height: 1.2;
   }
+  /* Below 60rem, the sidebar's grid column cannot fit its 9rem width. */
+  @media (max-width: 960px) {
+    .article-aside { display: none; }
+  }
   @media (max-width: 760px) {
     .article-frame {
       display: block;
       width: min(100%, 36.375rem);
       padding: 2rem 1.5rem 3rem;
     }
-    .article-aside { position: static; width: auto; margin-bottom: 2.25rem; }
-    .section-nav {
-      margin: 1.5rem 0 0;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--faint);
-    }
-    .section-nav ol { display: flex; flex-wrap: wrap; gap: 0.35rem 0.8rem; }
-    .section-nav li + li { margin-top: 0; }
-    .section-nav li.nested { padding-left: 0; }
-    .section-nav a { text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 0.14em; }
     .post-nav { grid-template-columns: 1fr; }
   }
 </style>
