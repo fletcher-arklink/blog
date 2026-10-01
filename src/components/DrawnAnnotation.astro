@@ -1,0 +1,80 @@
+---
+interface Props {
+  text: string;
+  /** Use \n for an explicit line break in the handwritten note. */
+  note: string;
+  /** The phrase the arrow starts from; defaults to the last word. */
+  anchor?: string;
+}
+
+const { text, note, anchor = text.match(/\S+$/)?.[0] ?? text } = Astro.props;
+const anchorIndex = text.lastIndexOf(anchor);
+if (!anchor || anchorIndex < 0) {
+  throw new Error('DrawnAnnotation anchor must be a non-empty phrase within text.');
+}
+const beforeAnchor = text.slice(0, anchorIndex);
+const afterAnchor = text.slice(anchorIndex + anchor.length);
+---
+
+<div class="annotated-transition" data-drawn-annotation>
+  <p><strong>{beforeAnchor}<span data-arrow-origin>{anchor}</span>{afterAnchor}</strong></p>
+  <svg class="annotation-arrow" viewBox="0 0 160 60" fill="none" aria-hidden="true" focusable="false">
+    <path class="arrow-shaft" pathLength="1" d="M4 32 Q78 22 152 30" />
+    <path class="arrow-head" pathLength="1" d="M145 26 L152 30 L145 33" />
+  </svg>
+  <p class="handwritten-note"><span class="handwritten-text" data-arrow-target>{note}</span></p>
+</div>
+
+
+<script>
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll<HTMLElement>('[data-drawn-annotation]').forEach((annotation) => {
+    const origin = annotation.querySelector<HTMLElement>('[data-arrow-origin]')!;
+    const target = annotation.querySelector<HTMLElement>('[data-arrow-target]')!;
+    const arrow = annotation.querySelector<SVGSVGElement>('.annotation-arrow')!;
+    const shaft = arrow.querySelector<SVGPathElement>('.arrow-shaft')!;
+    const head = arrow.querySelector<SVGPathElement>('.arrow-head')!;
+
+    const positionArrow = () => {
+      const box = annotation.getBoundingClientRect();
+      const from = origin.getBoundingClientRect();
+      const to = target.getBoundingClientRect();
+      const desktop = window.matchMedia('(min-width: 1100px)').matches;
+      const sx = from.right - box.left + (desktop ? 4 : -3);
+      const sy = desktop ? from.top - box.top + from.height * 0.7 : from.bottom - box.top + 3;
+      const tx = to.left - box.left - 6;
+      const ty = to.top - box.top + to.height * 0.55;
+      const cx = desktop ? (sx + tx) / 2 : tx - 12;
+      const cy = desktop ? (sy + ty) / 2 - 6 : sy + (ty - sy) * 0.65;
+      shaft.setAttribute('d', `M${sx} ${sy} Q${cx} ${cy} ${tx} ${ty}`);
+      const angle = Math.atan2(ty - cy, tx - cx);
+      const wing = (offset: number) => `${tx - 6 * Math.cos(angle + offset)} ${ty - 6 * Math.sin(angle + offset)}`;
+      head.setAttribute('d', `M${wing(0.45)} L${tx} ${ty} L${wing(-0.5)}`);
+      arrow.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+      arrow.setAttribute('data-positioned', '');
+    };
+
+    positionArrow();
+    const resizeObserver = new ResizeObserver(positionArrow);
+    resizeObserver.observe(annotation);
+    resizeObserver.observe(target);
+    document.fonts.ready.then(positionArrow);
+
+    if (!reducedMotion.matches && 'IntersectionObserver' in window) {
+      annotation.classList.add('draw-ready');
+      const observer = new IntersectionObserver((entries) => {
+        if (entries.some(entry => entry.isIntersecting)) {
+          annotation.classList.add('is-drawn');
+          observer.disconnect();
+        }
+      }, { threshold: 0.5, rootMargin: '0px 0px -12% 0px' });
+      observer.observe(annotation);
+      reducedMotion.addEventListener('change', (event) => {
+        if (event.matches) {
+          annotation.classList.remove('draw-ready');
+          observer.disconnect();
+        }
+      });
+    }
+  });
+</script>

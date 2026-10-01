@@ -7,83 +7,112 @@ tags:
   - security
 ---
 
-We rarely understand the systems we operate within as well as we think we do. 
+import DrawnAnnotation from '../../components/DrawnAnnotation.astro';
+import ParagraphAnnotation from '../../components/ParagraphAnnotation.astro';
 
-We understand pieces of them. We understand what they were designed to do, the parts we interact with, the rules we have written, the assumptions we have made, and the behaviors we have learned to expect. 
-We build diagrams, abstractions, policies, and mental models because we need some way to make the whole thing understandable.
+We rarely understand the systems we operate within as well as we think we do.
 
-But those models are not the system.
+<ParagraphAnnotation
+  paragraph="We understand pieces of them. We understand what they were designed to do, the parts we interact with, the rules we have written, the assumptions we have made, and the behaviors we have learned to expect. We build diagrams, abstractions, policies, and mental models because we need some way to make the whole thing understandable."
+  note="But those models are not the system, just our intepretation."
+/>
 
-A sufficiently complex system is simply too large to hold in our heads at once. Knowledge of it becomes fragmented. One person understands a service. Another understands an identity system. Someone else understands a workflow, a dependency, or a piece of infrastructure.
-We understand the micro without the macro, or the macro without the details that produce it.
+A sufficiently complex system is simply too large to hold in our heads at once. Knowledge of it becomes fragmented. One person understands a process. Another understands the people involved. Someone else understands a rule, a relationship, or why a decision was made.
+We understand the parts without seeing the whole, or the whole without understanding what holds it together.
 
-And where our understanding ends, assumptions begin.
+And where our understanding ends, our assumptions begin.
 
-We assume one component behaves the way we believe it does. We assume a relationship means what it was originally intended to mean. We assume a permission exists for the reason it was created. 
-We assume the boundaries we have drawn around the system correspond to boundaries that actually exist.
-
-We have to. Complexity is overwhelming, and abstraction is how we survive it.
+<ParagraphAnnotation
+  paragraph="We assume a process works the way we believe it does. We assume a relationship still means what it once meant. We assume a rule still serves the purpose it was created for. We assume the boundaries we have drawn around a system correspond to boundaries that actually exist."
+  note="We have to. Complexity is overwhelming, and abstraction is how we survive it."
+  side="left"
+/>
 
 In much the same way that our minds construct a workable picture of the world from limited sensory information, we construct workable models of the systems around us. 
 We simplify. We infer. We ignore detail. We fill gaps. 
 
 Most of the time, that works remarkably well. Until it doesn't.
 
-Systems do not behave according to our understanding of them. They behave according to their structure. And structure contains possibility. The system we intended is relatively easy to describe. 
-There are roles, boundaries, workflows, permissions, rules, and expected paths. Intention gives us something coherent to reason about. The possible system is harder.
-It includes every behavior those pieces can produce together, every path created through their relationships, and every outcome that can emerge from their interaction.
+## Intention and possibility
 
-Intended state is legible. Possible state is uncertain. And possibility is not static.
+Systems do not behave according to our understanding of them. They behave according to how they are actually built. And that construction often makes possible more than we intended. The system we intended is relatively easy to describe. 
+There are people, responsibilities, processes, rules, and expected outcomes. Intention gives us something coherent to reason about. 
 
-A new application is connected. A person changes roles. A service gains a permission. An automation begins acting on behalf of a user. One system begins trusting another. 
-A decision made somewhere else quietly changes what is possible here. Often, nothing is broken. Every individual component may be behaving exactly as intended. The surprise exists in the composition.
+<ParagraphAnnotation
+  paragraph="What the system actually makes possible is harder to describe. It includes every behavior those pieces can produce together, every possibility created through their relationships, and every outcome that can emerge from their interaction."
+  note="Intention is easy to state. Possibility is harder to see. And it is ever evolving."
+/>
 
-Intent tends to be local. Possibility is compositional.
+<ParagraphAnnotation
+  paragraph="A new feature is introduced. A person changes roles. A task is delegated. Two teams begin working together. A decision made somewhere else quietly changes what is possible here. Often, nothing is broken. Each part may be working exactly as intended. The surprise lies in what they make possible together."
+  note="Intent tends to be local. Possibility is compositional."
+  side="left"
+/>
 
-We create relationships one at a time, for reasons that make sense in isolation. The system combines them into paths that no one necessarily designed.
+We create relationships one at a time, for reasons that make sense in isolation. The system combines them into outcomes that no one necessarily designed.
 A decision in one part of the system changes the conditions somewhere else. Two systems can each behave correctly in isolation while producing something unexpected when they interact.
 The behavior of the whole is not always obvious from the behavior of its parts.
 
-And we are not standing outside of this system observing it. We are part of it.
+<DrawnAnnotation
+  text="And we are not standing outside of this system observing it."
+  note="We are part of it."
+/>
 
 Our decisions alter its structure. Our actions create new relationships. Our attempts to control the system change the environment that everyone else operates within.
 
-This is where security becomes uncomfortable.
+This is the tension at the heart of security.
 
 We are asked to maintain control over a system we do not fully know, against an adversary we often cannot see, while both the system and the people operating within it continue to change.
 Security lives somewhere between the system we intended and the system that is actually possible.
 
-Hackers offer an interesting way of looking at that space.
+## Exploring possibility
+Seeing these possibilities requires a different way of looking at systems.
 
-The word carries plenty of baggage, particularly in security, where it is often treated as synonymous with attacker. But there is something useful in the way hackers approach systems.
-They cannot rely entirely on documentation, architecture diagrams, or the beliefs of the people who built the system. They do not trust the systems at face value. They are intrincisly curious.
-They have to discover what it actually allows, the space of possibility. They attempt to alter it’s intended functionality to align with their goals.
+<ParagraphAnnotation
+  paragraph="It requires a certain skepticism toward what we are told is true, and a curiosity about what might also be possible. Not cynicism, exactly. More a refusal to accept the first explanation as the only explanation. A willingness to keep pulling at the thread."
+  note="I think that instinct is more common than we give it credit for."
+  side="left"
+/>
 
-A designer may ask:
+Anyone who has solved a problem that initially felt impossible has felt some version of it. 
+Anyone who has found a way around an apparent constraint, questioned an assumption everyone else accepted, or discovered a path that was not obvious at first.
 
-**What is this system supposed to do?**
+<ParagraphAnnotation
+  paragraph="In that sense, hacking is not something reserved for a particular class of people. It is a way of engaging with a system. You begin by understanding the world as it presents itself: its rules, interfaces, boundaries, and intended behaviors. Then you push against them. You ask which constraints are real, which are assumed, which depend on context, and what becomes possible when pieces of the system are combined in ways nobody anticipated."
+  note="In most cases it requires understanding the system entirely differently than the people who originally designed it."
+  side="right"
+/>
 
-A hacker asks:
+In the security landscape, we often see the results of this curiosity. A massive headline for a new software vulnerability. A new attack path traversing a complex sequence of legitimate permissions and trust relationships.
 
-**What can I make this system do?**
+These discoveries can look very different on the surface. One may come from a flaw in code. Another may involve nothing broken at all. But both reveal something important: **the system made something possible that our previous understanding of it did not fully account for.**
 
-In the security landscape, the answer is sometimes a software vulnerability. But it does not have to be.
+And there will always be another one. Not because every system is poorly designed, but because complex systems do not remain still. A new feature changes what can interact. 
+A new dependency introduces another relationship. A person gains access. Each change reshapes the space of possibility.
 
-It might be a sequence of perfectly legitimate permissions. A trust relationship. An overlooked workflow. Several harmless capabilities that become meaningful only when composed.
+Artificial intelligence is accelerating this in both directions. It is helping us explore systems, reason over complexity, and discover possibilities faster than before. 
+At the same time, it is introducing new capabilities, new interactions, and new assumptions into systems that were already difficult to understand. 
 
-In that sense, hacking is less interesting as the act of breaking a system than as the exploration of possibility within it.
+<DrawnAnnotation
+  text="The danger is not the technology itself. I use it often."
+  note={"How do you think I got these\nfancy animations?"}
+/>
 
-The hacker begins somewhere, wants to arrive somewhere else, and tries to understand what lies between the two:
-**Where am I? What do I know? Where do I want to go? What does the system make possible between the two?**
-
-Those questions are difficult precisely because the system is never completely known.
-Perhaps that is the uncomfortable truth at the center of security.
-
+The danger is forgetting what it represents: another layer of abstraction between us and the systems we are trying to understand. 
+If we delegate too much of our awareness to systems whose own models are incomplete, we risk replacing our assumptions with theirs and mistaking the result for reality.
+## Acting within uncertainty
 We will never possess a perfect model of the systems we are trying to protect.
-We will operate through incomplete information, imperfect abstractions, and assumptions that are sometimes wrong.
-The challenge is not to eliminate that uncertainty.
-It is to understand and act within it.
+
+There will always be limits to what we can see, what we can know, and how quickly we can understand a system that is continuously changing around us. That does not mean we stop trying. If anything, it makes understanding more important.
+
+Security cannot depend on reaching some final state where every path is known, every vulnerability has been found, and every uncertainty has been eliminated. That state does not exist.
+
+**Security is not a state we reach. It is a condition within a system we maintain.**
+
+That means learning to operate through incomplete information, imperfect abstractions, and assumptions that will sometimes be wrong. It means continually improving our understanding, noticing when reality has moved beyond our model of it, and adapting as the system itself evolves.
+The goal is not certainty.
+It is to become better at understanding and acting within uncertainty.
+
 Because the system we intend is only one version of the system.
 
 The rest exists in the space of possibility.
-

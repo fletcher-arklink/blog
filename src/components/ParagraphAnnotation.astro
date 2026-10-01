@@ -1,0 +1,115 @@
+---
+interface Props {
+  paragraph: string;
+  note: string;
+  side?: 'left' | 'right';
+}
+const { paragraph, note, side = 'right' } = Astro.props;
+const sentenceEnd = paragraph.indexOf('. ');
+const lead = sentenceEnd < 0 ? paragraph : paragraph.slice(0, sentenceEnd + 1);
+const rest = sentenceEnd < 0 ? '' : paragraph.slice(sentenceEnd + 1);
+---
+
+<details class="paragraph-annotation" data-paragraph-annotation data-side={side}>
+  <summary title="Click to add a handwritten annotation">
+    <span class="annotation-paragraph"><span class="annotation-lead">{lead}</span>{rest}</span>
+  </summary>
+  <svg class="paragraph-bracket" viewBox="0 0 600 100" fill="none" aria-hidden="true" focusable="false">
+    <path class="bracket-stroke" pathLength="1" d="M603 3 Q612 1 612 5 L612 95 Q612 99 603 97" />
+  </svg>
+  <aside class="paragraph-note" aria-label="Handwritten annotation"><span data-paragraph-note>{note}</span></aside>
+</details>
+
+<script>
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll<HTMLDetailsElement>('[data-paragraph-annotation]').forEach((annotation) => {
+    const paragraph = annotation.querySelector<HTMLElement>('summary')!;
+    const note = annotation.querySelector<HTMLElement>('[data-paragraph-note]')!;
+    const drawing = annotation.querySelector<SVGSVGElement>('.paragraph-bracket')!;
+    const bracket = drawing.querySelector<SVGPathElement>('.bracket-stroke')!;
+    let eraseTimer: number | undefined;
+
+    const finishErasing = () => {
+      window.clearTimeout(eraseTimer);
+      eraseTimer = undefined;
+      annotation.open = false;
+      annotation.classList.remove('is-erasing');
+      note.style.removeProperty('--erase-from');
+    };
+
+    const positionDrawing = () => {
+      paragraph.title = annotation.open ? 'Click to erase the handwritten annotation' : 'Click to add a handwritten annotation';
+      if (!annotation.open) return;
+      const box = annotation.getBoundingClientRect();
+      const body = paragraph.getBoundingClientRect();
+      const left = annotation.dataset.side === 'left';
+      const edge = (left ? body.left : body.right) - box.left;
+      const direction = left ? -1 : 1;
+      const height = body.height;
+      const x = edge + direction * 11;
+      const cap = edge + direction * 3;
+      bracket.setAttribute('d', `M${cap} 2 Q${x + direction} 0 ${x} 5 C${x + direction} ${height * 0.33} ${x - direction} ${height * 0.66} ${x} ${height - 5} Q${x + direction} ${height} ${cap} ${height - 2}`);
+      drawing.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+    };
+
+    paragraph.addEventListener('click', (event) => {
+      if (!annotation.open || event.defaultPrevented) return;
+      event.preventDefault();
+      if (annotation.classList.contains('is-erasing')) return;
+      if (reducedMotion.matches) {
+        finishErasing();
+        return;
+      }
+      note.style.setProperty('--erase-from', window.getComputedStyle(note).clipPath);
+      annotation.classList.add('is-erasing');
+      // Keep the native disclosure open until the ink has been wiped away.
+      eraseTimer = window.setTimeout(finishErasing, 600);
+    });
+
+    annotation.addEventListener('toggle', () => {
+      if (!annotation.open && eraseTimer !== undefined) finishErasing();
+      positionDrawing();
+    });
+    reducedMotion.addEventListener('change', (event) => {
+      if (event.matches && annotation.classList.contains('is-erasing')) finishErasing();
+    });
+    const resizeObserver = new ResizeObserver(positionDrawing);
+    resizeObserver.observe(paragraph);
+    resizeObserver.observe(note);
+    document.fonts.ready.then(positionDrawing);
+    positionDrawing();
+  });
+</script>
+
+<style>
+  .paragraph-annotation { position: relative; }
+  summary { display: block; position: relative; list-style: none; cursor: pointer; }
+  summary::-webkit-details-marker { display: none; }
+  summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; border-radius: 2px; }
+  .annotation-lead { text-decoration-line: underline; text-decoration-style: dotted; text-decoration-color: #c8c8c0; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+  summary:hover .annotation-lead, summary:focus-visible .annotation-lead { text-decoration-color: #777772; }
+  details[open] .annotation-lead { text-decoration-color: transparent; }
+  .paragraph-bracket { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; color: #777772; }
+  .paragraph-bracket path { stroke: currentColor; stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .paragraph-note { margin: 0.875rem 1rem 0; color: #4a4a4a; font: 400 1.35rem/1.2 Caveat, 'Bradley Hand', 'Segoe Print', cursive; }
+  .paragraph-note span { display: inline-block; text-wrap: pretty; }
+  @media (min-width: 1100px) {
+    .paragraph-note { position: absolute; top: 50%; left: calc(100% + 1.75rem); width: 12rem; margin: 0; transform: translateY(-50%) rotate(-2deg); }
+  }
+  @media (min-width: 1100px) and (max-width: 1399px) {
+    details[data-side="left"] .paragraph-note { position: static; width: auto; margin: 0.875rem 1rem 0; transform: none; }
+  }
+  @media (min-width: 1400px) {
+    details[data-side="left"] .paragraph-note { left: auto; right: calc(100% + 1.75rem); transform: translateY(-50%) rotate(2deg); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    details[open] .bracket-stroke { stroke-dasharray: 1; stroke-dashoffset: 1; animation: bracket-draw 450ms ease-out forwards; }
+    details[open] .paragraph-note span { clip-path: inset(-0.1em 100% -0.1em 0); animation: bracket-write 1100ms 300ms linear forwards; }
+    details.is-erasing .paragraph-note span { animation: bracket-erase-note 480ms ease-in-out forwards; }
+    details.is-erasing .paragraph-bracket { animation: bracket-erase-line 420ms 120ms ease-in-out both; }
+  }
+  @keyframes bracket-erase-note { from { clip-path: var(--erase-from, inset(-0.1em 0 -0.1em 0)); } to { clip-path: inset(-0.1em 0 -0.1em 100%); } }
+  @keyframes bracket-erase-line { from { clip-path: inset(0 -2rem 0 -2rem); } to { clip-path: inset(100% -2rem 0 -2rem); } }
+  @keyframes bracket-draw { to { stroke-dashoffset: 0; } }
+  @keyframes bracket-write { to { clip-path: inset(-0.1em 0 -0.1em 0); } }
+</style>
