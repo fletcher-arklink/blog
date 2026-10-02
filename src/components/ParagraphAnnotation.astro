@@ -30,10 +30,32 @@ const rest = sentenceEnd < 0 ? '' : paragraph.slice(sentenceEnd + 1);
     const drawing = annotation.querySelector<SVGSVGElement>('.paragraph-bracket')!;
     const bracket = drawing.querySelector<SVGPathElement>('.bracket-stroke')!;
     let eraseTimer: number | undefined;
+    let revealFrame: number | undefined;
+
+    const resetDrawing = () => {
+      if (revealFrame !== undefined) window.cancelAnimationFrame(revealFrame);
+      revealFrame = undefined;
+      annotation.classList.remove('is-drawing');
+    };
+
+    const startDrawing = () => {
+      resetDrawing();
+      if (reducedMotion.matches) return;
+      // Paint the hidden starting state before replaying the reveal on every open.
+      revealFrame = window.requestAnimationFrame(() => {
+        revealFrame = window.requestAnimationFrame(() => {
+          revealFrame = undefined;
+          if (annotation.open && !annotation.classList.contains('is-erasing')) {
+            annotation.classList.add('is-drawing');
+          }
+        });
+      });
+    };
 
     const finishErasing = () => {
       window.clearTimeout(eraseTimer);
       eraseTimer = undefined;
+      resetDrawing();
       annotation.open = false;
       annotation.classList.remove('is-erasing');
       note.style.removeProperty('--erase-from');
@@ -73,9 +95,16 @@ const rest = sentenceEnd < 0 ? '' : paragraph.slice(sentenceEnd + 1);
     annotation.addEventListener('toggle', () => {
       if (!annotation.open && eraseTimer !== undefined) finishErasing();
       positionDrawing();
+      if (annotation.open && !annotation.classList.contains('is-erasing')) startDrawing();
+      else resetDrawing();
     });
     reducedMotion.addEventListener('change', (event) => {
-      if (event.matches && annotation.classList.contains('is-erasing')) finishErasing();
+      if (event.matches) {
+        resetDrawing();
+        if (annotation.classList.contains('is-erasing')) finishErasing();
+      } else if (annotation.open) {
+        startDrawing();
+      }
     });
     const resizeObserver = new ResizeObserver(positionDrawing);
     resizeObserver.observe(paragraph);
@@ -106,8 +135,10 @@ const rest = sentenceEnd < 0 ? '' : paragraph.slice(sentenceEnd + 1);
     [data-side="left"] .paragraph-note { right: calc(100% + 2rem); }
   }
   @media (prefers-reduced-motion: no-preference) {
-    details[open] .bracket-stroke { stroke-dasharray: 1; stroke-dashoffset: 1; animation: bracket-draw 450ms ease-out forwards; }
-    details[open] .paragraph-note span { clip-path: inset(-0.1em 100% -0.1em 0); animation: bracket-write 1100ms 300ms linear forwards; }
+    details[open] .paragraph-bracket { clip-path: inset(0 -2rem 100% -2rem); }
+    details[open] .paragraph-note span { clip-path: inset(-0.1em 100% -0.1em 0); }
+    details.is-drawing .paragraph-bracket { animation: bracket-draw 650ms ease-in-out forwards; }
+    details.is-drawing .paragraph-note span { animation: bracket-write 1100ms 350ms linear forwards; }
     details.is-erasing .paragraph-note span { animation: bracket-erase-note 480ms ease-in-out forwards; }
     details.is-erasing .paragraph-bracket { animation: bracket-erase-line 420ms 120ms ease-in-out both; }
   }
@@ -122,6 +153,6 @@ const rest = sentenceEnd < 0 ? '' : paragraph.slice(sentenceEnd + 1);
   }
   @keyframes bracket-erase-note { from { clip-path: var(--erase-from, inset(-0.1em 0 -0.1em 0)); } to { clip-path: inset(-0.1em 0 -0.1em 100%); } }
   @keyframes bracket-erase-line { from { clip-path: inset(0 -2rem 0 -2rem); } to { clip-path: inset(100% -2rem 0 -2rem); } }
-  @keyframes bracket-draw { to { stroke-dashoffset: 0; } }
+  @keyframes bracket-draw { from { clip-path: inset(0 -2rem 100% -2rem); } to { clip-path: inset(0 -2rem 0 -2rem); } }
   @keyframes bracket-write { to { clip-path: inset(-0.1em 0 -0.1em 0); } }
 </style>

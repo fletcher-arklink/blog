@@ -1,7 +1,7 @@
 ---
 title: "The Space Between Intended and Possible"
 description: "On systems, emergence, and the limits of intention"
-date: 2026-10-01
+date: 2026-10-02
 tags:
   - systems thinking
   - security
@@ -9,6 +9,7 @@ tags:
 
 import DrawnAnnotation from '../../components/DrawnAnnotation.astro';
 import ParagraphAnnotation from '../../components/ParagraphAnnotation.astro';
+import PostNotes from '../../components/PostNotes.astro';
 
 We rarely understand the systems we operate within as well as we think we do.
 
@@ -17,13 +18,13 @@ We rarely understand the systems we operate within as well as we think we do.
   note="But those models are not the system, just our intepretation."
 />
 
-A sufficiently complex system is simply too large to hold in our heads at once. Knowledge of it becomes fragmented. One person understands a process. Another understands the people involved. Someone else understands a rule, a relationship, or why a decision was made.
-We understand the parts without seeing the whole, or the whole without understanding what holds it together.
+A sufficiently complex system is too large to understand all at once. We encounter it in fragments: a process here, documentation there, a relationship, a constraint, a piece of history, an assumption carried forward. We build a workable picture from those pieces, but the picture is never complete. 
+We may understand individual parts in great detail without seeing how they compose, or understand the shape of the whole without knowing the interactions that actually give it form.
 
 And where our understanding ends, our assumptions begin.
 
 <ParagraphAnnotation
-  paragraph="We assume a process works the way we believe it does. We assume a relationship still means what it once meant. We assume a rule still serves the purpose it was created for. We assume the boundaries we have drawn around a system correspond to boundaries that actually exist."
+  paragraph="We assume a control works the way we believe it does. We assume a relationship still means what it once meant. We assume a process still serves the purpose it was created for. We assume the boundaries we have drawn around a system correspond to boundaries that actually exist."
   note="We have to. Complexity is overwhelming, and abstraction is how we survive it."
   side="left"
 />
@@ -44,14 +45,10 @@ There are people, responsibilities, processes, rules, and expected outcomes. Int
 />
 
 <ParagraphAnnotation
-  paragraph="A new feature is introduced. A person changes roles. A task is delegated. Two teams begin working together. A decision made somewhere else quietly changes what is possible here. Often, nothing is broken. Each part may be working exactly as intended. The surprise lies in what they make possible together."
+  paragraph="A new feature is introduced. A person is onboarded. A dependency is updated. Two teams begin working together. A decision made somewhere else quietly changes what is possible here. Often, nothing is broken. Each part may be working exactly as intended. But relationships created one at a time, for reasons that make sense in isolation, can combine into outcomes no one designed. The behavior of the whole is not always obvious from the behavior of its parts."
   note="Intent tends to be local. Possibility is compositional."
   side="left"
 />
-
-We create relationships one at a time, for reasons that make sense in isolation. The system combines them into outcomes that no one necessarily designed.
-A decision in one part of the system changes the conditions somewhere else. Two systems can each behave correctly in isolation while producing something unexpected when they interact.
-The behavior of the whole is not always obvious from the behavior of its parts.
 
 <DrawnAnnotation
   text="And we are not standing outside of this system observing it."
@@ -87,23 +84,19 @@ In the security landscape, we often see the results of this curiosity. A massive
 
 These discoveries can look very different on the surface. One may come from a flaw in code. Another may involve nothing broken at all. But both reveal something important: **the system made something possible that our previous understanding of it did not fully account for.**
 
-And there will always be another one. Not because every system is poorly designed, but because complex systems do not remain still. A new feature changes what can interact. 
-A new dependency introduces another relationship. A person gains access. Each change reshapes the space of possibility.
+And there will always be another one. Not because every system is poorly designed, but because complex systems do not remain still. Customers will continue to request new features. 
+Software will continue to evolve. Organizations are incentivized to grow. Each change reshapes the space of possibility.
 
 Artificial intelligence is accelerating this in both directions. It is helping us explore systems, reason over complexity, and discover possibilities faster than before. 
-At the same time, it is introducing new capabilities, new interactions, and new assumptions into systems that were already difficult to understand. 
+At the same time, it is rapidly evolving software systems, introducing new capabilities, new interactions, and new assumptions into systems that were already difficult to understand. 
 
-<DrawnAnnotation
-  text="The danger is not the technology itself. I use it often."
-  note={"How do you think I got these\nfancy animations?"}
-/>
-
-The danger is forgetting what it represents: another layer of abstraction between us and the systems we are trying to understand. 
+There is danger in forgetting what it represents: another layer of abstraction between us and the systems we are trying to understand. 
 If we delegate too much of our awareness to systems whose own models are incomplete, we risk replacing our assumptions with theirs and mistaking the result for reality.
 ## Operating within uncertainty
 We will never possess a perfect model of the systems we are trying to protect.
 
 There will always be limits to what we can see, what we can know, and how quickly we can understand a system that is continuously changing around us. That does not mean we stop trying. If anything, it makes understanding more important.
+Our abilities to make decisions as defenders are dependent on our understanding of our environment.
 
 Security cannot depend on reaching some final state where every path is known, every vulnerability has been found, and every uncertainty has been eliminated. That state does not exist.
 
@@ -116,3 +109,7 @@ It is to become better at understanding and acting within uncertainty.
 Because the system we intend is only one version of the system.
 
 The rest exists in the space of possibility.
+
+<PostNotes>
+Credit to [Benji](https://benji.org/) for the annotation inspiration.
+</PostNotes>

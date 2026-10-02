@@ -1,0 +1,51 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title } = Astro.props;
+---
+
+<section class="post-notes" aria-label={title ?? 'Notes and credits'}>
+  {title && <h2 class="post-notes-title">{title}</h2>}
+  <div class="post-notes-content">
+    <slot />
+  </div>
+</section>
+
+<style>
+  :global(.prose) .post-notes {
+    margin-top: 3rem;
+    color: var(--secondary);
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  :global(.prose) .post-notes .post-notes-title {
+    margin: 0 0 0.4rem;
+    color: var(--secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: normal;
+  }
+  :global(.prose) .post-notes :global(a) {
+    color: inherit;
+    text-decoration-color: var(--faint);
+  }
+  :global(.prose) .post-notes :global(a:hover) {
+    color: var(--ink);
+    text-decoration-color: var(--secondary);
+  }
+  .post-notes-content > :global(:first-child) { margin-top: 0; }
+  .post-notes-content > :global(:last-child) { margin-bottom: 0; }
+  .post-notes-content > :global(* + *) { margin-top: 0.4rem; }
+  .post-notes-content :global(ul),
+  .post-notes-content :global(ol) {
+    margin-bottom: 0;
+    padding-left: 1.25rem;
+  }
+  .post-notes-content :global(li + li) { margin-top: 0.25rem; }
+</style>
