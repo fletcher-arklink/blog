@@ -5,9 +5,10 @@ interface Props {
   note: string;
   /** The phrase the arrow starts from; defaults to the last word. */
   anchor?: string;
+  side?: 'left' | 'right';
 }
 
-const { text, note, anchor = text.match(/\S+$/)?.[0] ?? text } = Astro.props;
+const { text, note, side = 'right', anchor = text.match(/\S+$/)?.[0] ?? text } = Astro.props;
 const anchorIndex = text.lastIndexOf(anchor);
 if (!anchor || anchorIndex < 0) {
   throw new Error('DrawnAnnotation anchor must be a non-empty phrase within text.');
@@ -16,7 +17,7 @@ const beforeAnchor = text.slice(0, anchorIndex);
 const afterAnchor = text.slice(anchorIndex + anchor.length);
 ---
 
-<div class="annotated-transition" data-drawn-annotation>
+<div class="annotated-transition" data-drawn-annotation data-side={side}>
   <p><strong>{beforeAnchor}<span data-arrow-origin>{anchor}</span>{afterAnchor}</strong></p>
   <svg class="annotation-arrow" viewBox="0 0 160 60" fill="none" aria-hidden="true" focusable="false">
     <path class="arrow-shaft" pathLength="1" d="M4 32 Q78 22 152 30" />
@@ -28,6 +29,7 @@ const afterAnchor = text.slice(anchorIndex + anchor.length);
 
 <script>
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const marginLayout = window.matchMedia('(min-width: 75rem)');
   document.querySelectorAll<HTMLElement>('[data-drawn-annotation]').forEach((annotation) => {
     const origin = annotation.querySelector<HTMLElement>('[data-arrow-origin]')!;
     const target = annotation.querySelector<HTMLElement>('[data-arrow-target]')!;
@@ -40,22 +42,38 @@ const afterAnchor = text.slice(anchorIndex + anchor.length);
       // A wrapped anchor has one rect per line; start at its final fragment.
       const fragments = origin.getClientRects();
       const from = fragments[fragments.length - 1] ?? origin.getBoundingClientRect();
-      const sx = from.left - box.left + from.width / 2;
-      const sy = from.bottom - box.top + 4;
+      const inMargin = marginLayout.matches;
+      const left = annotation.dataset.side === 'left';
+      const sx = (inMargin ? (left ? from.left - 4 : from.right + 4) : from.left + from.width / 2) - box.left;
+      const sy = (inMargin ? from.top + from.height / 2 : from.bottom + 4) - box.top;
 
-      // Keep the note under its anchor while keeping the entire note in the column.
+      // In the stacked layout, keep the note beneath its anchor and inside the column.
       const noteWidth = target.offsetWidth;
-      const offset = Math.max(0, Math.min(sx - noteWidth / 2, box.width - noteWidth));
+      const offset = inMargin ? 0 : Math.max(0, Math.min(sx - noteWidth / 2, box.width - noteWidth));
       target.style.setProperty('--note-offset', `${offset}px`);
       const to = target.getBoundingClientRect();
-      const tx = Math.max(to.left - box.left + 6, Math.min(sx, to.right - box.left - 6));
-      const ty = to.top - box.top - 7;
-      const gap = Math.max(1, ty - sy);
-      const bend = Math.min(8, gap * 0.2);
-      const cx = Math.max(2, Math.min(box.width - 2, sx + bend));
-      const cy = ty - gap * 0.4;
-      shaft.setAttribute('d', `M${sx} ${sy} C${cx} ${sy + gap * 0.4} ${tx + bend} ${cy} ${tx} ${ty}`);
-      const angle = Math.atan2(ty - cy, -bend);
+      const tx = inMargin
+        ? (left ? to.right + 7 : to.left - 7) - box.left
+        : Math.max(to.left - box.left + 6, Math.min(sx, to.right - box.left - 6));
+      const ty = (inMargin ? to.top + Math.min(to.height / 2, 14) : to.top - 7) - box.top;
+      let c1x: number, c1y: number, c2x: number, c2y: number;
+      if (inMargin) {
+        const reach = Math.max(12, Math.abs(tx - sx) * 0.4);
+        const direction = left ? -1 : 1;
+        c1x = sx + direction * reach;
+        c1y = sy + 8;
+        c2x = tx - direction * reach;
+        c2y = ty;
+      } else {
+        const gap = Math.max(1, ty - sy);
+        const bend = Math.min(8, gap * 0.2);
+        c1x = Math.max(2, Math.min(box.width - 2, sx + bend));
+        c1y = sy + gap * 0.4;
+        c2x = tx + bend;
+        c2y = ty - gap * 0.4;
+      }
+      shaft.setAttribute('d', `M${sx} ${sy} C${c1x} ${c1y} ${c2x} ${c2y} ${tx} ${ty}`);
+      const angle = Math.atan2(ty - c2y, tx - c2x);
       const wing = (offset: number) => `${tx - 6 * Math.cos(angle + offset)} ${ty - 6 * Math.sin(angle + offset)}`;
       head.setAttribute('d', `M${wing(0.45)} L${tx} ${ty} L${wing(-0.5)}`);
       arrow.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);

@@ -201,6 +201,10 @@ const sections = headings.filter(({ depth }) => depth === 2 || depth === 3);
     font-weight: 500;
     line-height: 1.2;
   }
+  /* The left annotation gutter shares this column; keep navigation above the notes. */
+  @media (min-width: 75rem) {
+    .article-aside { position: static; }
+  }
   /* Below 60rem, the sidebar's grid column cannot fit its 9rem width. */
   @media (max-width: 960px) {
     .article-aside { display: none; }
